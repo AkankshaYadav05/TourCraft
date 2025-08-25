@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -7,8 +8,11 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -17,7 +21,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/product-tour-platform', {
+mongoose.connect(process.env.ATLASDB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -33,11 +37,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use(session({
-  secret: 'your-secret-key-change-in-production',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: 'mongodb://localhost:27017/product-tour-platform'
+    mongoUrl: process.env.ATLASDB_URL
   }),
   cookie: {
     secure: false, // Set to true in production with HTTPS
