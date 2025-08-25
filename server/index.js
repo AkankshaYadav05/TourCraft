@@ -21,14 +21,14 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // MongoDB connection
-mongoose.connect(process.env.ATLASDB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.ATLASDB_URL)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
+
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: true,
   credentials: true
 }));
 
@@ -44,7 +44,7 @@ app.use(session({
     mongoUrl: process.env.ATLASDB_URL
   }),
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
