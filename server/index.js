@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -7,22 +6,10 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-const path = require('path');
-
-// Serve static frontend
-app.use(express.static(path.join(__dirname, '../dist')));
-
-// React Router fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
-
-
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -31,14 +18,14 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // MongoDB connection
-mongoose.connect(process.env.ATLASDB_URL)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
-
+mongoose.connect(process.env.ATLASDB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // Middleware
 app.use(cors({
-  origin: true,
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 
@@ -54,7 +41,7 @@ app.use(session({
     mongoUrl: process.env.ATLASDB_URL
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+    secure: false, // Set to true in production with HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }

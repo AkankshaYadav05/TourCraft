@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 class ApiService {
   async request(endpoint, options = {}) {
@@ -12,14 +12,32 @@ class ApiService {
       ...options,
     };
 
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'An error occurred');
+    let response;
+    try {
+      response = await fetch(url, config);
+    } catch (err) {
+      throw new Error('Network error or server not reachable');
     }
 
-    return response.json();
+    if (!response.ok) {
+      let errorMsg = `Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.error || errorMsg;
+      } catch {
+        // response not JSON
+      }
+      throw new Error(errorMsg);
+    }
+
+    // handle empty response (204 No Content)
+    if (response.status === 204) return null;
+
+    try {
+      return await response.json();
+    } catch {
+      return null; // fallback if response body is empty
+    }
   }
 
   // Auth methods
@@ -84,16 +102,21 @@ class ApiService {
     const formData = new FormData();
     formData.append('screenshot', file);
 
-    return fetch(`${API_BASE_URL}/tours/upload`, {
+    const response = await fetch(`${API_BASE_URL}/tours/upload`, {
       method: 'POST',
       credentials: 'include',
       body: formData,
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-      return response.json();
     });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
   }
 
   async incrementClick(shareUrl) {

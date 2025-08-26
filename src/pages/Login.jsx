@@ -10,10 +10,9 @@ const Login = () => {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const { login } = useAuth();
+  
+  const { login, loading } = useAuth(); // mock login from context
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,16 +24,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
     try {
-      await login(formData.email, formData.password);
-      navigate('/dashboard');
+      // Pass entire formData object to mock login
+      await login(formData);
+      navigate('/dashboard'); // redirect after mock login
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
