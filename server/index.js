@@ -6,7 +6,10 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+
+if(process.env.NODE_ENV != "production") {
+    require("dotenv").config();
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,9 +26,21 @@ mongoose.connect(process.env.ATLASDB_URL, {
   useUnifiedTopology: true,
 });
 
+
+
+// Log connection status
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB connected successfully!');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 
@@ -41,7 +56,7 @@ app.use(session({
     mongoUrl: process.env.ATLASDB_URL
   }),
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: true, // Set to true in production with HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
@@ -64,6 +79,11 @@ app.use('/api/analytics', analyticsRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running!' });
 });
+
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
