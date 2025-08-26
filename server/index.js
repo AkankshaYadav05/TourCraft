@@ -56,7 +56,7 @@ app.use(session({
     mongoUrl: process.env.ATLASDB_URL
   }),
   cookie: {
-    secure: true, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
@@ -74,6 +74,15 @@ const analyticsRoutes = require('./routes/analytics');
 app.use('/api/auth', authRoutes);
 app.use('/api/tours', tourRoutes);
 app.use('/api/analytics', analyticsRoutes);
+
+
+// const path = require('path');
+// app.use(express.static(path.join(__dirname, '../client/build')));
+
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+// });
+
 
 // Health check
 app.get('/api/health', (req, res) => {

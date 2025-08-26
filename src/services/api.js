@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://tourcraft-eiaz.onrender.com/';
+const API_BASE_URL = 'https://tourcraft-eiaz.onrender.com';
 
 class ApiService {
   async request(endpoint, options = {}) {
@@ -42,25 +42,25 @@ class ApiService {
 
   // Auth methods
   async register(userData) {
-    return this.request('/auth/register', {
+    return this.request('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   async login(credentials) {
-    return this.request('/auth/login', {
+    return this.request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
   }
 
   async logout() {
-    return this.request('/auth/logout', { method: 'POST' });
+    return this.request('/api/auth/logout', { method: 'POST' });
   }
 
   async getCurrentUser() {
-    return this.request('/auth/me');
+    return this.request('/api/auth/me');
   }
 
   // Tour methods
