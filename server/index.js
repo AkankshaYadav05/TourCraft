@@ -13,6 +13,11 @@ if(process.env.NODE_ENV != "production") {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const DB_URL = 'mongodb://127.0.0.1:27017/product-tour-platform';
+const ALLOWED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+console.log('Using local MongoDB URL:', DB_URL);
+console.log('Allowing CORS from:', ALLOWED_ORIGINS.join(', '));
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -21,7 +26,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // MongoDB connection
-mongoose.connect(process.env.ATLASDB_URL, {
+mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -40,7 +45,13 @@ mongoose.connection.on('error', (err) => {
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: function(origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy: origin not allowed'));
+    }
+  },
   credentials: true
 }));
 
@@ -49,15 +60,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'local-secret-key',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.ATLASDB_URL
+    mongoUrl: DB_URL
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
-    httpOnly: true,
+    secure: process.env.NODE_ENV === 'development', // Set to true in production with HTTPS
+    httpOnly: false,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

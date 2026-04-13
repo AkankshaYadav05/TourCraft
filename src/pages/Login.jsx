@@ -6,13 +6,12 @@ import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: 'abc@gmail.com',
+    password: 'password123'
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   
-  const { login, loading } = useAuth(); // mock login from context
+  const { login, loading, authError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,14 +23,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
-      // Pass entire formData object to mock login
       await login(formData);
-      navigate('/dashboard'); // redirect after mock login
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
+      // Error is already set in authError from context
     }
   };
 
@@ -61,11 +58,17 @@ const Login = () => {
           className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-lg"
           onSubmit={handleSubmit}
         >
-          {error && (
+          {authError && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-              {error}
+              {authError}
             </div>
           )}
+
+          {/* <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
+            <strong>Demo credentials:</strong><br/>
+            Email: abc@gmail.com<br/>
+            Password: password123
+          </div> */}
 
           <div className="space-y-4">
             <div>

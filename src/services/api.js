@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://tourcraft-eiaz.onrender.com';
+const API_BASE_URL = "http://localhost:5000";
 
 class ApiService {
   async request(endpoint, options = {}) {
@@ -65,44 +65,44 @@ class ApiService {
 
   // Tour methods
   async getTours() {
-    return this.request('/tours');
+    return this.request('/api/tours');
   }
 
   async getTour(id) {
-    return this.request(`/tours/${id}`);
+    return this.request(`/api/tours/${id}`);
   }
 
   async getPublicTour(shareUrl) {
-    return this.request(`/tours/public/${shareUrl}`);
+    return this.request(`/api/tours/public/${shareUrl}`);
   }
 
   async createTour(tourData) {
-    return this.request('/tours', {
+    return this.request('/api/tours', {
       method: 'POST',
       body: JSON.stringify(tourData),
     });
   }
 
   async updateTour(id, tourData) {
-    return this.request(`/tours/${id}`, {
+    return this.request(`/api/tours/${id}`, {
       method: 'PUT',
       body: JSON.stringify(tourData),
     });
   }
 
   async deleteTour(id) {
-    return this.request(`/tours/${id}`, { method: 'DELETE' });
+    return this.request(`/api/tours/${id}`, { method: 'DELETE' });
   }
 
   async toggleTourVisibility(id) {
-    return this.request(`/tours/${id}/visibility`, { method: 'PATCH' });
+    return this.request(`/api/tours/${id}/visibility`, { method: 'PATCH' });
   }
 
   async uploadScreenshot(file) {
     const formData = new FormData();
     formData.append('screenshot', file);
 
-    const response = await fetch(`${API_BASE_URL}/tours/upload`, {
+    const response = await fetch(`${API_BASE_URL}/api/tours/upload`, {
       method: 'POST',
       credentials: 'include',
       body: formData,
@@ -120,12 +120,12 @@ class ApiService {
   }
 
   async incrementClick(shareUrl) {
-    return this.request(`/tours/${shareUrl}/click`, { method: 'POST' });
+    return this.request(`/api/tours/${shareUrl}/click`, { method: 'POST' });
   }
 
   // Analytics methods
   async getAnalytics() {
-    return this.request('/analytics');
+    return this.request('/api/analytics');
   }
 }
 

@@ -51,6 +51,17 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
+// Get all tours (for development/demo - no auth required)
+router.get('/dev/all-tours', async (req, res) => {
+  try {
+    const tours = await Tour.find()
+      .sort({ updatedAt: -1 });
+    res.json(tours);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get single tour
 router.get('/:id', requireAuth, async (req, res) => {
   try {
