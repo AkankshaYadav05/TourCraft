@@ -162,11 +162,21 @@ const PublicTour = () => {
             >
               {currentStepData.screenshot ? (
                 <div className="relative max-w-6xl w-full">
-                  <img
-                    src={`http://localhost:5000${currentStepData.screenshot}`}
-                    alt={currentStepData.title}
-                    className="w-full h-auto rounded-lg shadow-2xl"
-                  />
+                  {/\.(mp4|webm|mov|ogg|avi|mkv)$/i.test(currentStepData.screenshot) ? (
+                    <video
+                      controls
+                      className="w-full h-auto rounded-lg shadow-2xl"
+                    >
+                      <source src={`http://localhost:5000${currentStepData.screenshot}`} />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <img
+                      src={`http://localhost:5000${currentStepData.screenshot}`}
+                      alt={currentStepData.title}
+                      className="w-full h-auto rounded-lg shadow-2xl"
+                    />
+                  )}
                   
                   {showAnnotations && currentStepData.annotations.map((annotation) => (
                     <motion.div

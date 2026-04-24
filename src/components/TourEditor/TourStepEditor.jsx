@@ -98,6 +98,8 @@ const TourStepEditor = ({ step, stepIndex, onStepUpdate }) => {
     });
   };
 
+  const isVideo = step.screenshot && /\.(mp4|webm|mov|ogg|avi|mkv)$/i.test(step.screenshot);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -138,7 +140,7 @@ const TourStepEditor = ({ step, stepIndex, onStepUpdate }) => {
       {/* Screenshot Section */}
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-semibold text-gray-900">Screenshot</h4>
+          <h4 className="text-lg font-semibold text-gray-900">Media</h4>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -151,7 +153,7 @@ const TourStepEditor = ({ step, stepIndex, onStepUpdate }) => {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={handleFileUpload}
               className="hidden"
             />
@@ -166,11 +168,21 @@ const TourStepEditor = ({ step, stepIndex, onStepUpdate }) => {
               onClick={handleCanvasClick}
               style={{ aspectRatio: '16/9' }}
             >
-              <img
-                src={`http://localhost:5000${step.screenshot}`}
-                alt="Step screenshot"
-                className="w-full h-full object-contain"
-              />
+              {isVideo ? (
+                <video
+                  controls
+                  className="w-full h-full object-contain"
+                >
+                  <source src={`http://localhost:5000${step.screenshot}`} />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={`http://localhost:5000${step.screenshot}`}
+                  alt="Step media"
+                  className="w-full h-full object-contain"
+                />
+              )}
               
               {/* Annotations */}
               {step.annotations.map((annotation) => (
@@ -255,19 +267,19 @@ const TourStepEditor = ({ step, stepIndex, onStepUpdate }) => {
 
             {annotationMode && (
               <div className="mt-2 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
-                Click on the screenshot to add a {annotationMode} annotation
+                Click on the media to add a {annotationMode} annotation
               </div>
             )}
           </div>
         ) : (
           <div className="bg-gray-100 rounded-lg p-12 text-center">
             <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-4">No screenshot uploaded yet</p>
+            <p className="text-gray-600 mb-4">No media uploaded yet</p>
             <button
               onClick={() => fileInputRef.current?.click()}
               className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              Upload Screenshot
+              Upload Media
             </button>
           </div>
         )}
